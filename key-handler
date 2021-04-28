@@ -1,0 +1,133 @@
+#!/usr/bin/env bash
+#
+# +-------------------------------------------------------------------------+
+# | ~/.config/sxiv/exec/key-handler                                         |
+# +-------------------------------------------------------------------------+
+# | Copyright © 2021 Waldemar Schroeer                                      |
+# |                  waldemar.schroeer(at)rz-amper.de                       |
+# +-------------------------------------------------------------------------+
+
+Trash="${HOME}/Trash"                       # Trash/Recycle Bin Folder
+Collect="${HOME}/Pictures/Collect"                  # Folder to collect files
+DefaultDirSel="${HOME}/Pictures"            # Default Directory for file picker
+ZenityWidth=600                             # Width of information window
+ZenityHeight=800                            # Height of information window
+ZenityFontSmall="monospace 8"               # Small text size for information window
+ZenityFontLarge="monospace 10"              # Large text size for information window
+
+case "$1" in
+    "c")
+        n=0
+        if [ ! -d ${Collect} ]; then
+            mkdir -p ${Collect}
+            notify-send "Collect" "Could not find ${Collect}. Therefor it has been created."
+        fi
+        while read file; do
+            cp ${file} ${Collect}
+            ((n++))
+        done
+        notify-send "Collector" "${n} file(s) moved to ${Collect}."
+        ;;
+
+    "d")
+        n=0
+        if [ ! -d ${Trash} ]; then
+            mkdir -p ${Trash}
+            notify-send "Trash" "Could not find ${Trash}. Therefor it has been created."
+        fi
+        while read file; do
+            mv ${file} ${Trash}
+            ((n++))
+        done
+        notify-send "Move to Trash" "${n} file(s) moved to ${Trash}."
+        ;;
+
+    "D")
+        n=0
+        while read file; do
+            # rm -rf ${file}
+            ((n++))
+        done
+        notify-send "Delete" "${n} file(s) deleted permanently."
+        ;;
+
+    "e")
+        # xterm -e sh -c "exiv2 pr -q -pa '$file' | less"
+        while read file; do
+            echo "$(exiv2 -q -ps ${file})" | zenity --text-info --font="${ZenityFontLarge}" --width=${ZenityWidth} --height=${ZenityHeight} &
+        done
+        ;;
+
+    "E")
+        while read file; do
+            echo "$(exiv2 -q -Pnt ${file})" | zenity --text-info --font="${ZenityFontLarge}" --width=${ZenityWidth} --height=${ZenityHeight} &
+        done
+        ;;
+
+    "g")
+        n=0
+        while read file; do
+            gimp ${file} & disown
+            ((n++))
+        done
+        notify-send "Gimp" "${n} file(s) opened with Gimp."
+        ;;
+
+    "h")
+        zenity --info --no-wrap --text="$(cat ~/.config/sxiv/exec/key-handler-help.txt)" &
+        ;;
+
+    "m")
+        n=0
+        DestDir="$(zenity --title="Choose Directory" --file-selection --directory --filename=${DefaultDirSel})"
+        if [ "$?" -ne "0" ]; then
+            notify-send "Choose Directory" "Aborted!"
+            exit 1
+        fi
+        while read file; do
+            mv ${file} ${DestDir}
+            ((n++))
+        done
+        notify-send "Move" "${n} file(s) moved to ${DestDir}."
+        ;;
+
+    "r")
+        DestDir="$(zenity --title="Choose Directory" --file-selection --directory --filename=${DefaultDirSel})"
+        if [ "$?" -ne "0" ]; then
+            notify-send "Choose Directory" "Aborted!"
+            exit 1
+        fi
+        Resolution="$(zenity --title="Image Width" --entry --text="Image Resizer -- Please enter the image width (e.g. 600)")"
+        if [ "$?" -ne "0" ]; then
+            notify-send "Image Width" "Aborted!"
+            exit 1
+        fi
+        Extension="$(zenity --title="File Extension" --entry --text="Enter the file extension you want to convert to (e.g. jpg, png, tiff)")"
+        if [ "$?" -ne "0" ]; then
+            notify-send "File Extension" "Aborted!"
+            exit 1
+        fi
+        declare -l Extension
+        Extension=$Extension
+        Qual="$(zenity --title="Image Quality" --entry --text="Enter the image quality (1 - 100)")"
+        if [ "$?" -ne "0" ]; then
+            notify-send "Image Quality" "Aborted!"
+            exit 1
+        fi
+        if [ ${Extension} == "png" ]; then
+            Quality=$((${Qual} / 10))
+        else
+            Quality=${Qual}
+        fi
+        n=0
+        while read file; do
+            name="$(basename ${file})"
+            name="$(echo ${name} | cut -f1 -d.)"
+            convert -resize ${Resolution} -quality ${Quality} ${file} ${DestDir}/${name}.${Extension} >> ~/error.txt 2>&1
+            echo "convert -resize ${Resolution} -quality ${Quality} ${file} ${DestDir}/${name}.${Extension}" >> ~/error.txt 2>&1
+            ((n++))
+        done
+        notify-send "Resize" "${n} file(s) resized and moved to ${DestDir}"
+        ;;
+esac
+exit 0

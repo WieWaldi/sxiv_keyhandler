@@ -1,0 +1,54 @@
+--- Key Handler ---
+c - Copies file to collect folder (defaults to ~/Pictures)
+d - Move files to trash folder (defaults to ~/Trash)
+D - Delete file(s) permanently (Watch Out!)
+e - Pprint a summary of the Exif metadata
+E - Print Exif, IPTC and XMP metadata
+g - Open file(s) in Gimp
+h - Show this help
+m - Move file(s) to choosen directory
+r - Resize Images and store the resized version to choosen directory
+
+--- General ---
+q - Quit
+f - Toggle full screen
+b - Toggle visibility of info bar
+g - Go to the first image
+G - Go to the last image
+r - Reload image
+D - Remove current image from file list and go to next image
++ - Zoom in
+- - Zoom out
+{ - Decrease gamma correction
+} - Increase gamma correction
+
+Ctrl-h - Scroll left
+Ctrl-j - Scroll down
+Ctrl-k - Scroll up
+Ctrl-l - Scroll right
+Ctrl-g - Reset gama correction
+Ctrl-m - Remove all image marks
+
+--- Thumbnail mode ---
+h - Left
+j - Down
+k - Up
+l - Right
+R - Reload all thumbnails
+
+--- Image mode ---
+n, Space - Go forward
+p, Backspace - Go backward
+
+= - Set zoom level to 100%
+w - Set zoom level to 100%, but fit large images into window
+W - Fit image into window
+e - Fit image to window width
+E - Fit image to window height
+
+| - Flip image horizontally
+- - Flip image vertically
+
+a - Toggle anti aliasing
+A - Toggle visibility of alpha-channel
+s - Toggle slideshow mode and/or set the delay between images
