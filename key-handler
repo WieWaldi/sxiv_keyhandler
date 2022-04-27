@@ -1,22 +1,22 @@
 #!/usr/bin/env bash
 #
-# +-------------------------------------------------------------------------+
-# | ~/.config/sxiv/exec/key-handler                                         |
-# +-------------------------------------------------------------------------+
-# | Copyright © 2021 Waldemar Schroeer                                      |
-# |                  waldemar.schroeer(at)rz-amper.de                       |
-# +-------------------------------------------------------------------------+
+# +----------------------------------------------------------------------------+
+# | ~/.config/sxiv/exec/key-handler                                            |
+# +----------------------------------------------------------------------------+
+# | Copyright © 2021 Waldemar Schroeer                                         |
+# |                  waldemar.schroeer(at)rz-amper.de                          |
+# +----------------------------------------------------------------------------+
 
 Trash="${HOME}/Trash"                       # Trash/Recycle Bin Folder
-Collect="${HOME}/Pictures/Collect"                  # Folder to collect files
+Collect="${HOME}/Pictures/Collect"          # Folder to collect files
 DefaultDirSel="${HOME}/Pictures"            # Default Directory for file picker
 ZenityWidth=600                             # Width of information window
 ZenityHeight=800                            # Height of information window
-ZenityFontSmall="monospace 8"               # Small text size for information window
-ZenityFontLarge="monospace 10"              # Large text size for information window
+ZenityFontSmall="monospace 10"              # Small text size for information window
+ZenityFontLarge="monospace 12"              # Large text size for information window
 
 case "$1" in
-    "c")
+    "c")                                    # Collect files
         n=0
         if [ ! -d ${Collect} ]; then
             mkdir -p ${Collect}
@@ -29,7 +29,7 @@ case "$1" in
         notify-send "Collector" "${n} file(s) moved to ${Collect}."
         ;;
 
-    "d")
+    "d")                                    # Delete (move to Trash directory)
         n=0
         if [ ! -d ${Trash} ]; then
             mkdir -p ${Trash}
@@ -42,29 +42,28 @@ case "$1" in
         notify-send "Move to Trash" "${n} file(s) moved to ${Trash}."
         ;;
 
-    "D")
+    "D")                                    # Delete
         n=0
         while read file; do
-            # rm -rf ${file}
+            rm -rf ${file}
             ((n++))
         done
         notify-send "Delete" "${n} file(s) deleted permanently."
         ;;
 
-    "e")
-        # xterm -e sh -c "exiv2 pr -q -pa '$file' | less"
+    "e")                                    # Print metadat summery
         while read file; do
             echo "$(exiv2 -q -ps ${file})" | zenity --text-info --font="${ZenityFontLarge}" --width=${ZenityWidth} --height=${ZenityHeight} &
         done
         ;;
 
-    "E")
+    "E")                                    # Print metadat 
         while read file; do
             echo "$(exiv2 -q -Pnt ${file})" | zenity --text-info --font="${ZenityFontLarge}" --width=${ZenityWidth} --height=${ZenityHeight} &
         done
         ;;
 
-    "g")
+    "g")                                    # Gimp
         n=0
         while read file; do
             gimp ${file} & disown
@@ -73,11 +72,11 @@ case "$1" in
         notify-send "Gimp" "${n} file(s) opened with Gimp."
         ;;
 
-    "h")
+    "h")                                    # Help
         zenity --info --no-wrap --text="$(cat ~/.config/sxiv/exec/key-handler-help.txt)" &
         ;;
 
-    "m")
+    "m")                                    # Move
         n=0
         DestDir="$(zenity --title="Choose Directory" --file-selection --directory --filename=${DefaultDirSel})"
         if [ "$?" -ne "0" ]; then
@@ -91,7 +90,7 @@ case "$1" in
         notify-send "Move" "${n} file(s) moved to ${DestDir}."
         ;;
 
-    "r")
+    "r")                                    # Resize
         DestDir="$(zenity --title="Choose Directory" --file-selection --directory --filename=${DefaultDirSel})"
         if [ "$?" -ne "0" ]; then
             notify-send "Choose Directory" "Aborted!"

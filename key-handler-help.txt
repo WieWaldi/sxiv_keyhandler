@@ -1,5 +1,5 @@
 --- Key Handler ---
-c - Copies file to collect folder (defaults to ~/Pictures)
+c - Copies file to collect folder (defaults to ~/Pictures/Collect)
 d - Move files to trash folder (defaults to ~/Trash)
 D - Delete file(s) permanently (Watch Out!)
 e - Pprint a summary of the Exif metadata
